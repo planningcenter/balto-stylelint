@@ -12,6 +12,8 @@ type StylelintWarning = {
   text: string
   line: number
   column: number
+  endLine?: number
+  endColumn?: number
 }
 
 export class StylelintResult {
@@ -45,7 +47,9 @@ export class StylelintResult {
         title: msg.rule,
         file: this.repoFilePath,
         startLine: msg.line,
+        endLine: msg.endLine,
         startColumn: msg.column,
+        endColumn: msg.endColumn,
       }
       switch (msg.severity) {
         case "warning":
