@@ -1,0 +1,32 @@
+name: "Balto - Stylelint"
+description: "Run Stylelint on your repo"
+runs:
+  using: node20
+  main: dist/index.js
+branding:
+  icon: life-buoy
+  color: blue
+inputs:
+  failure-level:
+    description: 'The lowest annotation level to fail on ("warning" or "error")'
+    required: false
+    default: "error"
+  conclusion-level:
+    description: 'Action conclusion ("success" or "failure") if annotations of the failure-level were created'
+    required: false
+    default: "success"
+  working-directory:
+    description: Which directory to run the action in
+    required: false
+    default: "."
+  extensions:
+    description: A comma separated list of extensions to run Stylelint on.
+    required: false
+    default: ".scss,.css"
+outputs:
+  warning-count:
+    description: "Number of relevant warnings found"
+  error-count:
+    description: "Number of relevant errors found"
+  total-count:
+    description: "Number of relevant warnings and errors"

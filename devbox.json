@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.12.0/.schema/devbox.schema.json",
+  "packages": [
+    "nodejs@20",
+    "ruby@latest",
+    "act@latest"
+  ],
+  "env": {"DEVBOX_COREPACK_ENABLED": "true"},
+  "shell": {
+    "scripts": {
+      "setup": [
+        "gem install rerun",
+        "npm ci"
+      ],
+      "test": "npm run test",
+      "dev":  "npm run dev",
+      "rebuildtests": [
+        "git diff --quiet || { echo 'Working tree is not clean, exiting.'; exit 1; }",
+        "cd test/v16 && rm existing.scss new.scss some_file_that_stylelint_should_ignore && cd ../..",
+        "cp test/snapshots/base/* test/v16",
+        "git add . && git commit -m 'Automated: Undo simulated changes'",
+        "echo \"{ \\\"pull_request\\\": { \\\"base\\\": { \\\"sha\\\": \\\"$(git rev-parse HEAD)\\\" } } }\" > test/pull_request_event_payload.json",
+        "git add . && git commit -m 'Automated: Update test target sha'",
+        "cp test/snapshots/updates/* test/v16",
+        "git add . && git commit -m 'Automated: Simulate changes'"
+      ]
+    }
+  }
+}
