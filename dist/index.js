@@ -25770,7 +25770,7 @@ async function run() {
     core.debug(`Changed files matching extensions: ${changedFilesMatchingExtensions}`);
     if (changedFilesMatchingExtensions.length === 0)
         return;
-    let { stdout: stylelintOut, exitCode } = await (0, exec_1.getExecOutput)("npx stylelint --formatter=json", changedFilesMatchingExtensions, { ignoreReturnCode: true });
+    let { stdout: stylelintOut, exitCode } = await (0, exec_1.getExecOutput)("./node_modules/.bin/stylelint", ["--formatter=json", ...changedFilesMatchingExtensions], { ignoreReturnCode: true });
     let stylelintJson = JSON.parse(stylelintOut);
     core.debug(`Stylelint exit code: ${exitCode}`);
     let promises = stylelintJson.map((resultObject) => stylelint_result_1.StylelintResult.for(resultObject, compareSha));
