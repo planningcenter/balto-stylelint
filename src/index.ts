@@ -1,4 +1,7 @@
 import * as core from "@actions/core"
+import * as fs from "fs"
+import * as os from "os"
+import * as path from "path"
 import { detectChangedFiles, detectChangedFilesInFolder } from "./git_utils"
 import { getExecOutput } from "@actions/exec"
 import { ResultObject, StylelintResult } from "./stylelint_result"
@@ -45,13 +48,19 @@ async function run() {
 
   if (changedFilesMatchingExtensions.length === 0) return
 
-  let { stdout: stylelintOut, exitCode } = await getExecOutput(
+  let outputFile = path.join(os.tmpdir(), "stylelint-results.json")
+  let { exitCode } = await getExecOutput(
     "./node_modules/.bin/stylelint",
-    ["--formatter=json", ...changedFilesMatchingExtensions],
+    [
+      "--formatter=json",
+      `--output-file=${outputFile}`,
+      ...changedFilesMatchingExtensions,
+    ],
     { ignoreReturnCode: true },
   )
-  let stylelintJson = JSON.parse(stylelintOut)
   core.debug(`Stylelint exit code: ${exitCode}`)
+  let stylelintOut = fs.readFileSync(outputFile, "utf-8")
+  let stylelintJson = JSON.parse(stylelintOut)
 
   let promises: Array<Promise<StylelintResult>> = stylelintJson.map(
     (resultObject: ResultObject) =>

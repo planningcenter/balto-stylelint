@@ -25740,6 +25740,9 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
+const fs = __importStar(__nccwpck_require__(9896));
+const os = __importStar(__nccwpck_require__(857));
+const path = __importStar(__nccwpck_require__(6928));
 const git_utils_1 = __nccwpck_require__(8481);
 const exec_1 = __nccwpck_require__(5236);
 const stylelint_result_1 = __nccwpck_require__(1351);
@@ -25770,9 +25773,15 @@ async function run() {
     core.debug(`Changed files matching extensions: ${changedFilesMatchingExtensions}`);
     if (changedFilesMatchingExtensions.length === 0)
         return;
-    let { stdout: stylelintOut, exitCode } = await (0, exec_1.getExecOutput)("./node_modules/.bin/stylelint", ["--formatter=json", ...changedFilesMatchingExtensions], { ignoreReturnCode: true });
-    let stylelintJson = JSON.parse(stylelintOut);
+    let outputFile = path.join(os.tmpdir(), "stylelint-results.json");
+    let { exitCode } = await (0, exec_1.getExecOutput)("./node_modules/.bin/stylelint", [
+        "--formatter=json",
+        `--output-file=${outputFile}`,
+        ...changedFilesMatchingExtensions,
+    ], { ignoreReturnCode: true });
     core.debug(`Stylelint exit code: ${exitCode}`);
+    let stylelintOut = fs.readFileSync(outputFile, "utf-8");
+    let stylelintJson = JSON.parse(stylelintOut);
     let promises = stylelintJson.map((resultObject) => stylelint_result_1.StylelintResult.for(resultObject, compareSha));
     let stylelintResults = await Promise.all(promises);
     core.debug("Stylelint results ->");
