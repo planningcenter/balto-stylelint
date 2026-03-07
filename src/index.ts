@@ -46,8 +46,8 @@ async function run() {
   if (changedFilesMatchingExtensions.length === 0) return
 
   let { stdout: stylelintOut, exitCode } = await getExecOutput(
-    "npx stylelint --formatter=json",
-    changedFilesMatchingExtensions,
+    "./node_modules/.bin/stylelint",
+    ["--formatter=json", ...changedFilesMatchingExtensions],
     { ignoreReturnCode: true },
   )
   let stylelintJson = JSON.parse(stylelintOut)
